@@ -54,22 +54,8 @@ def actualizar_progreso(progreso: UserProgress):
     finally:
         db.close()
 
-# GET: Progreso por usuario
-@routerProgreso.get("/{user_id}")
-def obtener_progreso(user_id: int):
-    db = get_connection()
-    try:
-        cursor = db.cursor(dictionary=True)
-        cursor.execute("""
-            SELECT user_id, module_id, completed, completion_date
-            FROM user_progress WHERE user_id = %s
-        """, (user_id,))
-        datos = cursor.fetchall()
-        return JSONResponse(content=jsonable_encoder(datos))
-    except Exception as e:
-        return JSONResponse(status_code=500, content={"mensaje": "Error al obtener progreso", "excepcion": str(e)})
-    finally:
-        db.close()
+
+
 
 # GET: Progreso por módulo
 @routerProgreso.get("/curso/{module_id}")
@@ -220,3 +206,37 @@ def resumen_usuario(user_id: int):
         return JSONResponse(status_code=500, content={"mensaje": "Error al generar resumen", "excepcion": str(e)})
     finally:
         db.close()
+
+
+
+# GET: Todos los usuarios registrados (debe ir antes que /{user_id})
+@routerProgreso.get("/usuarios", tags=["Operaciones Usuarios"])
+def obtener_usuarios_registrados():
+    db = get_connection()
+    try:
+        cursor = db.cursor(dictionary=True)
+        cursor.execute("SELECT id, name, email FROM users")
+        usuarios = cursor.fetchall()
+        return JSONResponse(content=jsonable_encoder(usuarios))
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"mensaje": "Error al obtener usuarios registrados", "excepcion": str(e)})
+    finally:
+        db.close()
+
+# GET: Progreso individual por ID de usuario
+@routerProgreso.get("/{user_id}")
+def obtener_progreso_por_usuario(user_id: int):
+    db = get_connection()
+    try:
+        cursor = db.cursor(dictionary=True)
+        cursor.execute("""
+            SELECT user_id, module_id, completed, completion_date
+            FROM user_progress WHERE user_id = %s
+        """, (user_id,))
+        datos = cursor.fetchall()
+        return JSONResponse(content=jsonable_encoder(datos))
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"mensaje": "Error al obtener progreso", "excepcion": str(e)})
+    finally:
+        db.close()
+
