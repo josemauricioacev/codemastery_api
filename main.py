@@ -13,4 +13,13 @@ app.include_router(progreso.routerProgreso)
 def main():
     return {'hello FastAPI':'Codemastery'}
 
-
+@app.get("/pingdb")
+def pingdb():
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT 1")
+        result = cursor.fetchone()
+        return {"status": "ok", "result": result}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
