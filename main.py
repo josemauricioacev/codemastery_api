@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from routers import progreso
+from routers import usuarios
 
 app = FastAPI(
     title='Api Codemastery', 
@@ -7,7 +8,7 @@ app = FastAPI(
     version='1.0.1'
 )
 app.include_router(progreso.routerProgreso)
-
+app.include_router(usuarios.routerUsuarios)
 
 @app.get('/', tags=['Inicio'])
 def main():
